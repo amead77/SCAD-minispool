@@ -5,8 +5,8 @@
 // side supports or they are a tight fit.
 
 // resolution of the cylinder
-$fn = 64;
-//resolution of the core - use 6 for a hexagon (easier to print without support)
+cylres = 64;
+//resolution of the core - use 6 for a hexagon (easier to print without support if printing on side)
 coreres = 6;
 // Diameter of the roller
 core_d = 40;
@@ -25,10 +25,10 @@ end_d = core_d+10;
 
 module core() {
         difference() {
-            cylinder(h = core_w, d = core_d);
-                cylinder(h = bearing_w, d = bearing_d);
+            cylinder(h = core_w, d = core_d, $fn = cylres);
+                cylinder(h = bearing_w, d = bearing_d, $fn = cylres);
             translate([0,0,core_w-bearing_w]) 
-                cylinder(h = bearing_w, d = bearing_d);
+                cylinder(h = bearing_w, d = bearing_d, $fn = cylres);
             cylinder(h = core_w, d = center_hole_d, $fn = coreres);
         }
 };
