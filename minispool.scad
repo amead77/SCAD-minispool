@@ -4,6 +4,11 @@
 // if you don't need to secure the bearings. For instance, bearings can't come out due to
 // side supports or they are a tight fit.
 
+//Which part to make = 0 for tube, 1 for support
+partmake = 1;
+
+// ---- Tube ----
+
 // resolution of the cylinder
 cylres = 64;
 //resolution of the core - use 6 for a hexagon (easier to print without support if printing on side)
@@ -23,6 +28,20 @@ end_w = 3;
 // Diameter of the end stops
 end_d = core_d+10;
 
+// ---- Support ----
+
+cPinD = 5;
+cPinLen = 30;
+cPinOffsetX = 15;
+cPinOffsetZ = 11.5;
+cPinOffsetY = 0;
+cProfile = [[0,0],[5,15],[10,15],[11,5],[19,5],[20,15],[25,15],[30,0],[0,0]];
+cProfileExtrude = 23;
+
+// ---- Code ----
+
+
+// --- Tube ---
 module core() {
         difference() {
             cylinder(h = core_w, d = core_d, $fn = cylres);
@@ -48,8 +67,47 @@ module ends() {
         create_endring();
 }
 
+// --- Support ---
+
+module profile() {
+    linear_extrude(height = cProfileExtrude)
+        polygon(points = cProfile);
+}
+
+module legs() {
+    translate([0,-10,0]) {
+        cube([30, 10, 5]);
+    };
+    translate([0,-10,18]) {
+        cube([30, 10, 5]);
+    };
+}
+
+module pin() {
+    rotate([90,0,0]) {
+        translate([cPinOffsetX, cPinOffsetZ, cPinOffsetY]) {
+            cylinder(h = cPinLen, d = cPinD, $fn = 32);
+        };
+    };
+}
+
+if (partmake == 0) {
 color("moccasin")
     render() {
-        core();
-        ends();
+        union() {
+            core();
+            ends();
+        };
+    };
+};
+
+if (partmake == 1) {
+    render() {
+        union() {
+            profile();
+            legs();
+            pin();
+        };
+    };
+
 };
